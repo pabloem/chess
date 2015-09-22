@@ -51,7 +51,7 @@ class FoodChainBuilder:
                 self.append_pair(cw.get_move_taker(),cw.get_move_taken())
                 # Some functions some functions
                 while cw.next():
-                    if cw.get_move_type() == 'NT':
+                    if cw.get_move_type() == 'NT' or cw.get_move_type() == False:
                         break
                     self._switch()
                     self.T[0].append(cw.get_move_taker())

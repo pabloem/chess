@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from FoodChainBuilder import FoodChainBuilder
+from lib.FoodChainBuilder import FoodChainBuilder
 import sys
 import csv
 import json
