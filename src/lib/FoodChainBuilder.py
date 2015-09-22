@@ -32,7 +32,6 @@ class FoodChainBuilder:
 
     def flush_sets(self,callback):
         if callback is not None: callback(self._sets)
-        print("Flushed dem sets")
         self._sets = []
 
     def flush_pairs(self,callback):

@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 from FoodChainBuilder import FoodChainBuilder
 import sys
 import csv
