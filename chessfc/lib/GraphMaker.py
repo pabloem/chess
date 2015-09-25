@@ -24,3 +24,16 @@ def get_graph(in_file):
     f.close()
     G = make_graph(rows)
     return G
+
+def get_dictionary(in_file):
+    f = open(in_file)
+    cr = csv.reader(f)
+    res = {}
+    taken = 2
+    taker = 1
+    for row in cr:
+        if row[taken] not in res:
+            res[row[taken]] = {}
+        if row[taker] not in res[row[taken]]:
+            res[row[taken]][row[taker]] = float(row[0])
+    return res
