@@ -6,6 +6,7 @@ expl = """Usage: ./normalize_counts.py input_file output_file [taken(default) / 
 # This normalizes the counts of taken pieces - it """
 if len(sys.argv) < 3:
     print(expl)
+    sys.exit(0)
 
 in_file = sys.argv[1]
 out_file = sys.argv[2]

@@ -88,8 +88,8 @@ function drawBezier(pz,fraction) {
            bezierX+xAnchor,bezierY, // Control point
            endX-xAnchor,endY,//height*i,
            endX,endY);//canvas_width-width,height*(i+0.2)); // End point
-    vertex(endX,endY+height*0.8); // End point
-    bezierVertex(endXAnchor,endY+height,
+    vertex(endX,endY+height*0.8*fraction); // End point
+    bezierVertex(endXAnchor,endY+height*fraction,
                  bezierX+xAnchor,bezierY+fraction*graphHeight*prop[key], // Control point
                  bezierX,bezierY+fraction*graphHeight*prop[key]);       // Start point
     vertex(bezierX,bezierY);
