@@ -17,8 +17,8 @@ class FoodChainBuilder:
         if len(self.t[0]) > 0:
             self._sets.append({'taker':self.T[1],'taken':self.t[0]})
 
-    def append_pair(self,taker,taken):
-        self._pairs.append([taker,taken])
+    def append_pair(self,taker,tkr_position,taken,tkn_position):
+        self._pairs.append([taker,tkr_position,taken,tkn_position])
 
     def _switch(self):
         tmp = self.T[0]
@@ -45,10 +45,14 @@ class FoodChainBuilder:
             # normal chess games.
             while cw.next_taker():
                 self.setup()
-                self.T[0].append(cw.get_move_taker())
-                self.t[1].append(cw.get_move_taken())
-                self.T[1].append(cw.get_move_taken())
-                self.append_pair(cw.get_move_taker(),cw.get_move_taken())
+                if flush_sets is not None:
+                    self.T[0].append(cw.get_move_taker())
+                    self.t[1].append(cw.get_move_taken())
+                    self.T[1].append(cw.get_move_taken())
+                self.append_pair(cw.get_move_taker(),
+                                 cw.get_taker_position(),
+                                 cw.get_move_taken(),
+                                 cw.get_taken_position())
                 # Some functions some functions
                 while cw.next():
                     if cw.get_move_type() == 'NT' or cw.get_move_type() == False:
@@ -57,9 +61,10 @@ class FoodChainBuilder:
                     self.T[0].append(cw.get_move_taker())
                     self.t[1].append(cw.get_move_taken())
                     #self.T[1].append(cw.get_move_taken())
-                    self.append_pair(cw.get_move_taker(),cw.get_move_taken())                    
+                    self.append_pair(cw.get_move_taker(),cw.get_taker_position(),
+                                     cw.get_move_taken(),cw.get_taken_position())
                 # Conclude
-                self.append_sets()
+                if flush_sets is not None: self.append_sets()
             self.flush_sets(flush_sets)
             self.flush_pairs(flush_pairs)
         cw.close()

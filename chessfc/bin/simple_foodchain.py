@@ -36,10 +36,18 @@ def clear(pz,st):
     return pz
 
 count = 0
+taker_idx = 0
+taken_idx = 1
 for pair in cr:
-    taker = clear(pair[0],style)
-    taken = clear(pair[1],style)
-    cw.writerow([taker,taken])
+    if len(pair) == 4:
+        taker_idx = 0
+        taken_idx = 2
+    taker = clear(pair[taker_idx],style)
+    taken = clear(pair[taken_idx],style)
+    out_row = [elm for elm in pair]
+    out_row[taker_idx] = taker
+    out_row[taken_idx] = taken
+    cw.writerow(out_row)
     count += 1
 
 f.close()

@@ -26,6 +26,7 @@ class ChessWalker:
     def __init__(self,game_file):
         self._f = game_file
         self._fp = open(game_file)
+        self._rowList = ['A','B','C','D','E','F','G','H']
 
     # Feteches the next game frm the pgn input file
     # Returns False if this is the last 
@@ -100,6 +101,35 @@ class ChessWalker:
         
         t_square = m.to_square
         return self.get_piece_notation(t_square)
+
+    # Returns False if this is the last position
+    # Returns False if the move is not a taking move
+    # Returns the position of the taker piece otherwise
+    def get_taker_position(self):
+        if self.get_move_type() in ['NT', False]:
+            return False
+        g = self._g
+        b = g.board()
+        m = g.variation(0).move
+
+        uci = m.uci()[0:2]
+        return uci
+    
+    # Returns False if this is the last position
+    # Returns False if the move is not a taking move
+    # Returns the position of the taken piece otherwise
+    def get_taken_position(self):
+        if self.get_move_type() in ['NT', False]:
+            return False
+        g = self._g
+        b = g.board()
+        m = g.variation(0).move
+        
+        uci = m.uci()[2:]
+        if b.is_en_passant(m): # Special case for capture en passant
+            uci = uci[0] + m.uci()[1] + uci[2:]
+        
+        return uci
 
     # Moves the state to the next TAKING move of the game, or
     # the last one

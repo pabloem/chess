@@ -33,7 +33,7 @@ def flush_sets(set_list):
     for elm in set_list:
         sf.write(json.dumps(elm)+"\n")
     return
-fb.go(flush_pairs,flush_sets)
+fb.go(flush_pairs,None)
 
 if pair_file is not None: pf.close()
 sf.close()

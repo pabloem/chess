@@ -2,7 +2,7 @@
 import csv
 import sys
 
-expl = """Usage: ./normalize_counts.py input_file output_file [taken(default) / taker]
+expl = """Usage: ./normalize_counts.py input_file output_file [taken(default) / taker / all]
 # This normalizes the counts of taken pieces - it """
 if len(sys.argv) < 3:
     print(expl)
@@ -17,7 +17,7 @@ if len(sys.argv) > 3:
 
 f = open(in_file)
 cr = csv.reader(f)
-counts = {}
+counts = {'all':0}
 rows = []
 piece_idx = 2 if piece == 'taken' else 1
 
@@ -25,6 +25,7 @@ for row in cr:
     rows.append(row)
     if row[piece_idx] not in counts:
         counts[row[piece_idx]] = 0
+    counts['all'] += int(row[0])
     counts[row[piece_idx]] += int(row[0])
 
 f.close()
@@ -33,7 +34,10 @@ f = open(out_file,'w')
 
 cw = csv.writer(f)
 for row in rows:
-    row[0] = float(row[0])/counts[row[piece_idx]]
+    if piece == 'all':
+        row[0] = float(row[0])/counts['all']
+    else:
+        row[0] = float(row[0])/counts[row[piece_idx]]
     cw.writerow(row)
 
 f.close()
