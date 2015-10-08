@@ -228,6 +228,7 @@ function setColor(col) {
     control_piece = "P"; // Becaouse we don't have 'just color' data
   }
   drawn = false;
+  console.log(col);
 }
 function setMode(md) {
   control_mode = md;
@@ -243,6 +244,7 @@ function mousePressed(){
     var pz = pz_dic_lst[Math.floor((mouseY - board_offset) / height)];
     if(pz == control_piece) control_piece = undefined;
     else control_piece = pz;
+    console.log("Pz: "+control_piece);
     if(control_piece === undefined && control_color != 'all') control_color = 'all';
     drawn = false;
     return ;
@@ -254,4 +256,6 @@ function mousePressed(){
   if(inside(ctrl_txt_x-5,board_offset+2+height*2,width*1.5,25,mouseX,mouseY)) { setMode('sq'); return; }
   if(inside(ctrl_txt_x-5,board_offset+2+height*2.5,width*1.5,25,mouseX,mouseY)) { setMode('col'); return; }
   if(inside(ctrl_txt_x-5,board_offset+2+height*3,width*1.5,25,mouseX,mouseY)) { setMode('row'); return; }
+}
+function touchStarted() {
 }
