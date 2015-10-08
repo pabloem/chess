@@ -1,5 +1,5 @@
 var imgs = {};
-var canvas_width = 600,
+var canvas_width = 750,
     canvas_height = 600;
 var height, width;
 var ready_imgs = 0,
@@ -43,8 +43,10 @@ function drawBoard() {
   var fillInt = 0;
   for(var j = 0; j < 8; j++) {
     fillInt = abs(1 - fillInt);
-    fill(255);
-    text(8-j,2,height*(0.8+j));
+    fill(0);
+    textStyle(BOLD);
+    strokeWeight(0);
+    text(8-j,2,height*(0.9+j));
     text(columns[j],width*(0.8+j),15);
     for(var i = 0; i < 8; i++) {
       fill(125+125*fillInt);
@@ -64,12 +66,12 @@ function drawRows(label) {
     //y = row;
     strokeWeight(3);
     fill(255,255*(1-d[row]/max),0,155);
-    rect(board_offset,board_offset+height*(row-1),width*8,height);
+    rect(board_offset,board_offset+height*(8-row),width*8,height);
 
-    strokeWeight(2);
-    fill(255,255,255);
+    strokeWeight(0);
+    fill(0,0,0);
     str = Math.round(d[row]*10000) / 100+'%';
-    text(str,8*width+5+board_offset,row*height+board_offset-5);
+    text(str,8*width+5+board_offset,(9-row)*height+board_offset-5);
   }
 }
 
@@ -83,16 +85,17 @@ function drawCols(label) {
     strokeWeight(3);
     fill(255,255*(1-d[col]/max),0,155);
     rect(x*width+board_offset,board_offset,width,height*8);
-    strokeWeight(2);
+    strokeWeight(0);
+    fill(0,0,0);
     str = Math.round(d[col]*10000) / 100+'%';
-    text(str,x*width+3+board_offset,8*height+board_offset-3);
+    text(str,x*width+3+board_offset,8*height+board_offset+15);
   }
 }
 
 function drawSquares(label) {
   var d = sq_d[label],
       x,y, str, cnt = 0;
-  
+  var redLevel;
   var max = 0;
   for(var sqr in d) { if(d[sqr] > max) max = d[sqr]; }
   for(var sq in d) {
@@ -101,13 +104,69 @@ function drawSquares(label) {
     y = square_d[sq][0];
     //console.log("X,Y:"+x+","+y+" - SQ: "+sq+" d[sq]: "+d[sq]);
     strokeWeight(0);
-    fill(255,255*(1-d[sq]/max),0,125);
+    //fill(255,255*(1-d[sq]/max),0,125);
+    redLevel = bezierPoint(1,0.2,0,0,d[sq]/max);
+    fill(255,255*redLevel,0,125);
     rect(x*width+board_offset,(y-1)*height+board_offset,width,height);
     strokeWeight(2);
-    //fill(255,255,255);
+    fill(255,255,255);
+    stroke(0,0,0);
     str = Math.round(d[sq]*10000) / 100+'%';
     text(str,x*width+2+board_offset,y*height+board_offset-3);
   }
+}
+function drawControlPieces(col) {
+  var ctrl_pz_x = board_offset+11*width;
+  if(control_color == 'B') {
+    image(imgs.BP,ctrl_pz_x,board_offset);
+    image(imgs.BR,ctrl_pz_x,board_offset+height);
+    image(imgs.BN,ctrl_pz_x,board_offset+height*2);
+    image(imgs.BB,ctrl_pz_x,board_offset+height*3);
+    image(imgs.BQ,ctrl_pz_x,board_offset+height*4);
+    return;
+  }
+  if(control_color == 'all') tint(155,255);
+  image(imgs.WP,ctrl_pz_x,board_offset);
+  image(imgs.WR,ctrl_pz_x,board_offset+height);
+  image(imgs.WN,ctrl_pz_x,board_offset+height*2);
+  image(imgs.WB,ctrl_pz_x,board_offset+height*3);
+  image(imgs.WQ,ctrl_pz_x,board_offset+height*4);
+}
+var control_color = 'all',
+    control_piece = undefined,
+    control_mode = 'sq';
+var pz_dic = {'P':0,'R':1,'N':2,'B':3,'Q':4, undefined:5},
+    pz_dic_lst = ['P','R','N','B','Q',undefined];
+var color_dic = {'all':0, 'W':1, 'B':2},
+    mode_dic = {'sq':0,'col':1,'row':2};
+function drawControls() {
+  var ctrl_pz_x = board_offset+11*width;
+  drawControlPieces(control_color);
+  
+  fill(0);
+  strokeWeight(0);
+  textSize(14);
+  textStyle(BOLD);
+
+  text("All pieces",ctrl_pz_x+5,board_offset+height*5.5,width);
+
+  var ctrl_txt_x = board_offset+9*width;
+  text("All (B&W)",ctrl_txt_x, board_offset*2);
+  text("White",ctrl_txt_x, board_offset*2+height*0.5);
+  text("Black",ctrl_txt_x, board_offset*2+height);
+
+  text("Per square",ctrl_txt_x, board_offset*2+2*height);
+  text("Per column",ctrl_txt_x, board_offset*2+height*2.5);
+  text("Per row",ctrl_txt_x, board_offset*2+3*height);
+
+  stroke(0);
+  strokeWeight(2);
+  fill(255,255,255,0);
+  rect(ctrl_txt_x-5,board_offset+2+height*0.5*color_dic[control_color],width*1.5,25,5,5,5,5);
+  rect(ctrl_txt_x-5,board_offset+2+2*height+height*0.5*mode_dic[control_mode],width*1.5,25,5,5,5,5);
+  //if(control_piece !== undefined) {
+  rect(ctrl_pz_x,board_offset+height*pz_dic[control_piece],width,height,5,5,5,5);
+//}
 }
 
 function drawPieces() {
@@ -142,14 +201,57 @@ function drawPieces() {
   }
 }
 
-var drawn = false;
+var drawn = false,
+    drawMode = {'col':drawCols, 'row':drawRows, 'sq':drawSquares};
 function draw() {
   if(drawn) return;
   if(ready_imgs < total_imgs) return;
+  var pz_id = 'all';
+  background(255);
   drawBoard();
   drawPieces();
-  drawSquares('all');
-  //drawCols('WQ');
-  //drawRows('all');
+  drawControls();
+  if(control_piece !== undefined) pz_id = control_piece;
+  if(control_piece !== undefined && control_color != 'all') pz_id = control_color+control_piece;
+  drawMode[control_mode](pz_id);
   drawn = true;
+}
+
+// Tests whether a point is within a rectangle
+function inside(x,y,w,h,test_x,test_y) {
+  if(test_x >= x && test_x <= x+w && test_y >= y && test_y <= y+h) return true;
+  return false;
+}
+function setColor(col) {
+  control_color = col;
+  if(control_piece === undefined && col != 'all') {
+    control_piece = "P"; // Becaouse we don't have 'just color' data
+  }
+  drawn = false;
+}
+function setMode(md) {
+  control_mode = md;
+  drawn = false;
+  console.log(md);
+}
+function mousePressed(){
+  var ctrl_pz_x = board_offset+11*width,
+      ctrl_txt_x = board_offset+9*width,
+      is_pz = mouseX <= ctrl_pz_x+width && mouseX >= ctrl_pz_x && 
+        mouseY >= board_offset && mouseY <= board_offset+6*height;
+  if(is_pz) {
+    var pz = pz_dic_lst[Math.floor((mouseY - board_offset) / height)];
+    if(pz == control_piece) control_piece = undefined;
+    else control_piece = pz;
+    if(control_piece === undefined && control_color != 'all') control_color = 'all';
+    drawn = false;
+    return ;
+  }
+  if(inside(ctrl_txt_x-5,board_offset+2,width*1.5,25,mouseX,mouseY)) { setColor('all'); return; }
+  if(inside(ctrl_txt_x-5,board_offset+2+height*0.5,width*1.5,25,mouseX,mouseY)) { setColor('W'); return; }
+  if(inside(ctrl_txt_x-5,board_offset+2+height*0.5*2,width*1.5,25,mouseX,mouseY)) { setColor('B'); return; }
+
+  if(inside(ctrl_txt_x-5,board_offset+2+height*2,width*1.5,25,mouseX,mouseY)) { setMode('sq'); return; }
+  if(inside(ctrl_txt_x-5,board_offset+2+height*2.5,width*1.5,25,mouseX,mouseY)) { setMode('col'); return; }
+  if(inside(ctrl_txt_x-5,board_offset+2+height*3,width*1.5,25,mouseX,mouseY)) { setMode('row'); return; }
 }
