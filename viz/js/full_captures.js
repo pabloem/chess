@@ -49,7 +49,7 @@ function drawBoard() {
     text(8-j,2,height*(0.9+j));
     text(columns[j],width*(0.8+j),15);
     for(var i = 0; i < 8; i++) {
-      fill(125+125*fillInt);
+      fill(190+65*fillInt);
       fillInt = abs(1 - fillInt);
       rect(width*i+board_offset,height*j+board_offset,width,height);
       //rect(width*i+1,height*2.5,width,height);
@@ -106,7 +106,7 @@ function drawSquares(label) {
     strokeWeight(0);
     //fill(255,255*(1-d[sq]/max),0,125);
     redLevel = bezierPoint(1,0.2,0,0,d[sq]/max);
-    fill(255,255*redLevel,0,125);
+    fill(255,255*redLevel,0,225);
     rect(x*width+board_offset,(y-1)*height+board_offset,width,height);
     strokeWeight(2);
     fill(255,255,255);
